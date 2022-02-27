@@ -56,7 +56,6 @@ class Seemine:
     def create_field(self):
         self.field = np.array(
             [[0 for _ in range(self.size)] for _ in range(self.size)])
-        print(self.field)  # TODO: Remove
 
     def set_mines(self):
         count = 0
@@ -65,7 +64,6 @@ class Seemine:
             if self.field[y][x] != -1:
                 self.field[y][x] = -1
                 count += 1
-        print(self.field)  # TODO: Remove
 
     def set_values():
         pass
@@ -95,6 +93,29 @@ class Seemine:
     def draw_field_overlay():
         pass
 
+    def draw_mine(self, x, y):
+        pygame.draw.line(self.screen, pygame.Color('black'),
+                         (x+7, y+1), (x+7, y+13))
+        pygame.draw.line(self.screen, pygame.Color('black'),
+                         (x+1, y+7), (x+13, y+7))
+        pygame.draw.line(self.screen, pygame.Color('black'),
+                         (x+3, y+3), (x+11, y+11))
+        pygame.draw.line(self.screen, pygame.Color('black'),
+                         (x+11, y+3), (x+3, y+11))
+        pygame.draw.rect(self.screen, pygame.Color('black'),
+                         Rect(x+5, y+3, 5, 9))
+        pygame.draw.rect(self.screen, pygame.Color('black'),
+                         Rect(x+3, y+5, 9, 5))
+        pygame.draw.rect(self.screen, pygame.Color('white'),
+                         Rect(x+5, y+5, 2, 2))
+
+    def draw_mines(self):
+        print(self.field)
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.field[i][j] == -1:
+                    self.draw_mine(11+(16*j), 53+(16*i))
+
     def draw_counter():
         pass
 
@@ -112,8 +133,9 @@ class Seemine:
         self.screen.fill(pygame.Color(COLORS['gray']))
 
         self.prep()
-        self.draw_borders()  # should be last step
         self.draw_grid()
+        self.draw_borders()  # should be last step
+        self.draw_mines()
 
         while True:
             pygame.display.flip()
@@ -123,8 +145,8 @@ class Seemine:
 
 
 if __name__ == '__main__':
-    # seemine = Seemine()
-    seemine = Seemine('intermediate')
+    seemine = Seemine()
+    # seemine = Seemine('intermediate')
     # seemine = Seemine('expert')
 
     seemine.run()
