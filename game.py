@@ -3,7 +3,7 @@
 # TODO: In popular implementations mines are set after opening first block
 
 import pygame
-import numpy as np  # used only for beautiful output when debugging
+import numpy as np
 from random import randrange
 from pygame.locals import Rect, QUIT
 
@@ -96,8 +96,14 @@ class Seemine:
                     counter += 1 if self.field[y][x] == -1 else 0
         return counter
 
-    def empty_neighbours():
-        pass
+    def empty_neighbours(self, i, j):
+        for y in [a for a in [i-1, i, i+1] if a >= 0 and a < self.size]:
+            for x in [b for b in [j-1, j, j+1] if b >= 0 and b < self.size]:
+                if y == i and x == j:
+                    continue
+                else:
+                    if self.field[y][x] != -1:
+                        self.overlay[y][x] = 1
 
     def change_difficulty():
         pass
@@ -170,9 +176,8 @@ class Seemine:
                     if self.field[i][j] == -1:
                         self.overlay[i][j] = 1
         else:
-            if field != 0:
-                self.draw_colored_bg(y, x, COLORS[field])
             self.overlay[y][x] = 1
+            self.empty_neighbours(y, x)
 
     def draw_mine(self, x, y):
         pygame.draw.line(self.screen, pygame.Color('black'),
@@ -224,6 +229,11 @@ class Seemine:
         elif rmb:
             print(f"RMB: {self.get_mouse_pos()}")
 
+    def win_cond(self):
+        if np.sum(self.overlay) == (self.size * self.size - self.mines):
+            return True
+        return False
+
     def prep(self):
         self.create_field()
         self.set_mines()
@@ -246,8 +256,12 @@ class Seemine:
                 self.draw_mines()
                 self.draw_field_overlay()
                 # self.draw_flags()
+                if self.win_cond():
+                    self.gameover = True
+                    print("You Win!")  # TODO: Remove
             else:
-                self.draw_colored_bg(*self.gameover_pos)
+                if self.gameover_pos:
+                    self.draw_colored_bg(*self.gameover_pos)
                 self.draw_mines()
             self.draw_borders()  # should be last step
             for event in pygame.event.get():
@@ -258,8 +272,8 @@ class Seemine:
 
 
 if __name__ == '__main__':
-    # seemine = Seemine()
+    seemine = Seemine()
     # seemine = Seemine('intermediate')
-    seemine = Seemine('expert')
+    # seemine = Seemine('expert')
 
     seemine.run()
