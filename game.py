@@ -97,13 +97,14 @@ class Seemine:
         return counter
 
     def empty_neighbours(self, i, j):
+        if self.field[i][j] != -1:
+            self.overlay[i][j] = 1
         for y in [a for a in [i-1, i, i+1] if a >= 0 and a < self.size]:
             for x in [b for b in [j-1, j, j+1] if b >= 0 and b < self.size]:
-                if y == i and x == j:
-                    continue
-                else:
-                    if self.field[y][x] != -1:
-                        self.overlay[y][x] = 1
+                if self.overlay[y][x] != 1 and self.field[y][x] == 0:
+                    self.empty_neighbours(y, x)
+                if self.field[y][x] > 0:
+                    self.overlay[y][x] = 1
 
     def change_difficulty():
         pass
@@ -150,12 +151,6 @@ class Seemine:
                 if not self.overlay[i][j]:
                     self.draw_overlay_block(10+(16*j), 52+(16*i))
 
-    '''
-    def draw_exploded_block(self, x, y):
-        pygame.draw.rect(self.screen, pygame.Color('red'),
-                         Rect(11+(16*x), 53+(16*y), 15, 15))
-    '''
-
     def draw_colored_bg(self, x, y, color='red'):
         pygame.draw.rect(self.screen, pygame.Color(color),
                          Rect(11+(16*x), 53+(16*y), 15, 15))
@@ -176,7 +171,6 @@ class Seemine:
                     if self.field[i][j] == -1:
                         self.overlay[i][j] = 1
         else:
-            self.overlay[y][x] = 1
             self.empty_neighbours(y, x)
 
     def draw_mine(self, x, y):
@@ -200,6 +194,9 @@ class Seemine:
             for j in range(self.size):
                 if self.field[i][j] == -1:
                     self.draw_mine(11+(16*j), 53+(16*i))
+
+    def draw_number():
+        pass
 
     def draw_counter():
         pass
@@ -239,7 +236,6 @@ class Seemine:
         self.set_mines()
         self.set_numbers()
 
-    # TODO: refactoring of this spaghetti
     def run(self):
         pygame.init()
         pygame.display.set_caption('Seemine')
@@ -266,8 +262,6 @@ class Seemine:
             self.draw_borders()  # should be last step
             for event in pygame.event.get():
                 if event.type == QUIT:
-                    print(self.field)
-                    print(self.overlay)
                     pygame.quit()
 
 
