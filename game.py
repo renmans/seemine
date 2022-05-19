@@ -159,9 +159,14 @@ class Seemine:
         for i in range(self.size):
             for j in range(self.size):
                 if self.field[i][j] not in [-1, 0]:
-                    self.draw_colored_bg(j, i, COLORS[self.field[i][j]])
+                    self.draw_number(11+(16*j), 53+(16*i), self.field[i][j],
+                                     COLORS[self.field[i][j]])
+                    if self.field[i][j] not in [1, 2, 3]:
+                        self.draw_colored_bg(j, i, COLORS[self.field[i][j]])
 
     def update_overlay(self, x, y):
+        if self.flags[y][x] == -1:
+            return
         field = self.field[y][x]
         if field == -1:
             self.gameover = True
@@ -195,17 +200,94 @@ class Seemine:
                 if self.field[i][j] == -1:
                     self.draw_mine(11+(16*j), 53+(16*i))
 
-    def draw_number():
-        pass
+    def draw_number(self, x, y, number, color):
+        if number == 1:
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+6, y+3), (x+6, y+10))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+7, y+2), (x+7, y+10))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+8, y+2), (x+8, y+10))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+4, y+10), (x+10, y+10))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+4, y+11), (x+10, y+11))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+5, y+4), (x+5, y+4))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+4, y+5), (x+5, y+5))
+        elif number == 2:
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+3, y+2), (x+10, y+2))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+2, y+3), (x+11, y+3))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+2, y+4), (x+4, y+4))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+9, y+4), (x+11, y+4))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+9, y+5), (x+11, y+5))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+7, y+6), (x+10, y+6))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+5, y+7), (x+9, y+7))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+3, y+8), (x+7, y+8))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+2, y+9), (x+5, y+9))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+2, y+10), (x+11, y+10))
+            pygame.draw.line(self.screen, pygame.Color(color),
+                             (x+2, y+11), (x+11, y+11))
+        elif number == 3:
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+2, 9, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+9, y+3, 3, 3))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+5, y+6, 6, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+9, y+8, 3, 3))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+10, 9, 2))
+        elif number == 4:
+            pass
+        elif number == 5:
+            pass
+        elif number == 6:
+            pass
+        elif number == 7:
+            pass
+        elif number == 8:
+            pass
 
     def draw_counter():
         pass
 
-    def draw_flag():
-        pass
+    def set_flag(self, x, y):
+        # 0 / -1
+        self.flags[y][x] = ~self.flags[y][x]
 
-    def draw_flags():
-        pass
+    def draw_flag(self, x, y):
+        color = 'black'
+        pygame.draw.line(self.screen, pygame.Color('red'),
+                         (x+6, y+3), (x+6, y+10))
+        pygame.draw.rect(self.screen, pygame.Color(color),
+                         Rect(x+2, y+2, 9, 2))
+        pygame.draw.rect(self.screen, pygame.Color(color),
+                         Rect(x+9, y+3, 3, 3))
+        pygame.draw.rect(self.screen, pygame.Color(color),
+                         Rect(x+5, y+6, 6, 2))
+        pygame.draw.rect(self.screen, pygame.Color(color),
+                         Rect(x+9, y+8, 3, 3))
+        pygame.draw.rect(self.screen, pygame.Color(color),
+                         Rect(x+2, y+10, 9, 2))
+
+    def draw_flags(self):
+        for i in range(self.size):
+            for j in range(self.size):
+                if self.flags[i][j] == -1:
+                    self.draw_flag(11+(16*j), 53+(16*i))
 
     def draw_dropdown_menu():
         pass
@@ -224,7 +306,9 @@ class Seemine:
             if x in r and y in r:
                 self.update_overlay(x, y)
         elif rmb:
-            print(f"RMB: {self.get_mouse_pos()}")
+            x, y = self.get_mouse_pos()
+            if x in r and y in r:
+                self.set_flag(x, y)
 
     def win_cond(self):
         if np.sum(self.overlay) == (self.size * self.size - self.mines):
@@ -251,7 +335,7 @@ class Seemine:
                 self.draw_numbers()
                 self.draw_mines()
                 self.draw_field_overlay()
-                # self.draw_flags()
+                self.draw_flags()
                 if self.win_cond():
                     self.gameover = True
                     print("You Win!")  # TODO: Remove
@@ -266,8 +350,8 @@ class Seemine:
 
 
 if __name__ == '__main__':
-    seemine = Seemine()
-    # seemine = Seemine('intermediate')
+    # seemine = Seemine()
+    seemine = Seemine('intermediate')
     # seemine = Seemine('expert')
 
     seemine.run()
