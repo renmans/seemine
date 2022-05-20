@@ -1,6 +1,7 @@
 # NOTES
 # TODO: U can use more flags than there are mines
 # TODO: In popular implementations mines are set after opening first block
+# TODO: Add CONST for borders / screen size
 
 import pygame
 import numpy as np
@@ -29,7 +30,8 @@ COLORS = {
 
 
 class Seemine:
-    def __init__(self, difficulty='begginer'):
+    def __init__(self, difficulty='begginer', is_test=False):
+        self.is_test = is_test
         self.size = SETTINGS[difficulty]['size']
         self.mines = SETTINGS[difficulty]['mines']
         self.flags = SETTINGS[difficulty]['mines']
@@ -37,6 +39,7 @@ class Seemine:
         self.screen = pygame.display.set_mode(self.screen_size)
         self.gameover = False
         self.gameover_pos = None
+        # TODO: Move
         self.borders = (
             ((0, self.screen_size[1]-1),
              (self.screen_size[0], self.screen_size[1]-1)),
@@ -161,8 +164,6 @@ class Seemine:
                 if self.field[i][j] not in [-1, 0]:
                     self.draw_number(11+(16*j), 53+(16*i), self.field[i][j],
                                      COLORS[self.field[i][j]])
-                    if self.field[i][j] not in [1, 2, 3]:
-                        self.draw_colored_bg(j, i, COLORS[self.field[i][j]])
 
     def update_overlay(self, x, y):
         if self.flags[y][x] == -1:
@@ -179,6 +180,7 @@ class Seemine:
             self.empty_neighbours(y, x)
 
     def draw_mine(self, x, y):
+        # TODO: Refactoring
         pygame.draw.line(self.screen, pygame.Color('black'),
                          (x+7, y+1), (x+7, y+13))
         pygame.draw.line(self.screen, pygame.Color('black'),
@@ -201,6 +203,11 @@ class Seemine:
                     self.draw_mine(11+(16*j), 53+(16*i))
 
     def draw_number(self, x, y, number, color):
+        # TODO: Refactoring
+        # if number == 1:
+        # for value in value_list:
+        #   pygame.draw.line(self.screen, pygame.Color(color),
+        #       (x+value[0], y+value[1]), (x+value[2], y+value[3]))
         if number == 1:
             pygame.draw.line(self.screen, pygame.Color(color),
                              (x+6, y+3), (x+6, y+10))
@@ -251,15 +258,62 @@ class Seemine:
             pygame.draw.rect(self.screen, pygame.Color(color),
                              Rect(x+2, y+10, 9, 2))
         elif number == 4:
-            pass
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+4, y+2, 3, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+3, y+4, 3, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+6, 10, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+8, y+2, 3, 10))
         elif number == 5:
-            pass
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+2, 10, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+2, 3, 6))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+6, 9, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+10, 9, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+9, y+7, 3, 4))
         elif number == 6:
-            pass
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+3, y+2, 8, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+3, 3, 8))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+3, y+6, 8, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+3, y+10, 8, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+9, y+7, 3, 4))
         elif number == 7:
-            pass
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+2, 10, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+9, y+4, 3, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+8, y+6, 3, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+7, y+8, 3, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+6, y+10, 3, 2))
         elif number == 8:
-            pass
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+3, y+2, 8, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+9, y+3, 3, 3))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+3, y+6, 8, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+9, y+8, 3, 3))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+3, y+10, 8, 2))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+3, 3, 3))
+            pygame.draw.rect(self.screen, pygame.Color(color),
+                             Rect(x+2, y+8, 3, 3))
 
     def draw_counter():
         pass
@@ -269,19 +323,19 @@ class Seemine:
         self.flags[y][x] = ~self.flags[y][x]
 
     def draw_flag(self, x, y):
-        color = 'black'
-        pygame.draw.line(self.screen, pygame.Color('red'),
-                         (x+6, y+3), (x+6, y+10))
-        pygame.draw.rect(self.screen, pygame.Color(color),
-                         Rect(x+2, y+2, 9, 2))
-        pygame.draw.rect(self.screen, pygame.Color(color),
-                         Rect(x+9, y+3, 3, 3))
-        pygame.draw.rect(self.screen, pygame.Color(color),
-                         Rect(x+5, y+6, 6, 2))
-        pygame.draw.rect(self.screen, pygame.Color(color),
-                         Rect(x+9, y+8, 3, 3))
-        pygame.draw.rect(self.screen, pygame.Color(color),
-                         Rect(x+2, y+10, 9, 2))
+        # TODO: Refactoring
+        pygame.draw.rect(self.screen, pygame.Color('red'),
+                         Rect(x+6, y+2, 2, 5))
+        pygame.draw.rect(self.screen, pygame.Color('red'),
+                         Rect(x+4, y+3, 2, 3))
+        pygame.draw.rect(self.screen, pygame.Color('red'),
+                         Rect(x+3, y+4, 1, 1))
+        pygame.draw.rect(self.screen, pygame.Color('black'),
+                         Rect(x+7, y+7, 1, 2))
+        pygame.draw.rect(self.screen, pygame.Color('black'),
+                         Rect(x+5, y+9, 4, 1))
+        pygame.draw.rect(self.screen, pygame.Color('black'),
+                         Rect(x+3, y+10, 8, 2))
 
     def draw_flags(self):
         for i in range(self.size):
@@ -319,6 +373,12 @@ class Seemine:
         self.create_field()
         self.set_mines()
         self.set_numbers()
+        if self.is_test:
+            for i in range(8):
+                self.field[0][i] = i + 1
+                self.overlay[0][i] = 1
+            self.field[0][8] = -1
+            self.overlay[0][8] = 1
 
     def run(self):
         pygame.init()
@@ -350,8 +410,8 @@ class Seemine:
 
 
 if __name__ == '__main__':
-    # seemine = Seemine()
-    seemine = Seemine('intermediate')
+    seemine = Seemine()
+    # seemine = Seemine('intermediate')
     # seemine = Seemine('expert')
 
     seemine.run()
